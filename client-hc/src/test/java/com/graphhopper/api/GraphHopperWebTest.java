@@ -119,4 +119,21 @@ public class GraphHopperWebTest {
         CustomModel cm = objectMapper.readValue("{\"distance_influence\":null}", CustomModel.class);
         assertNull(cm.getDistanceInfluence());
     }
+
+//     @Test
+//     public void testSetKeyValidation() {
+//         GraphHopperWeb gh = new GraphHopperWeb();
+
+//         // 1. null key should throw NullPointerException
+//         NullPointerException npe = assertThrows(NullPointerException.class, () -> gh.setKey(null));
+//         assertEquals("Key must not be null", npe.getMessage());
+
+//         // 2. empty key should throw IllegalArgumentException
+//         IllegalArgumentException iae = assertThrows(IllegalArgumentException.class, () -> gh.setKey(""));
+//         assertEquals("Key must not be empty", iae.getMessage());
+
+//         // 3. valid key should work and be returned in the chain
+//         GraphHopperWeb returned = gh.setKey("my-api-key");
+//         assertSame(gh, returned, "setKey should return this for chaining");
+//     }
 }
