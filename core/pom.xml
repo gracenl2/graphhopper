@@ -164,6 +164,46 @@
                     <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
                 </configuration>
             </plugin>
+            <plugin>
+  <groupId>org.pitest</groupId>
+  <artifactId>pitest-maven</artifactId>
+  <version>1.9.11</version>
+  <configuration>
+  <jvmPath>/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java</jvmPath>
+
+    <targetClasses>
+      <param>com.graphhopper.util.AngleCalc*</param>
+    </targetClasses>
+    <targetTests>
+      <param>com.graphhopper.util.*AngleCalc*</param>
+    </targetTests>
+    <testPlugin>junit5</testPlugin>
+
+    <!-- stability settings -->
+    <threads>1</threads>                       <!-- run mutants sequentially -->
+    <useClasspathJar>false</useClasspathJar>   <!-- avoid long classpath jar on macOS -->
+    <jvmArgs>
+      <jvmArg>-Xmx1024m</jvmArg>               <!-- give the child JVM some headroom -->
+    </jvmArgs>
+
+    <!-- optional but fine to keep -->
+    <withHistory>true</withHistory>
+    <timeoutConst>4000</timeoutConst>
+    <sourceDirectories>
+      <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+    </sourceDirectories>
+    <testSourceDirectories>
+      <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+    </testSourceDirectories>
+  </configuration>
+  <dependencies>
+    <dependency>
+      <groupId>org.pitest</groupId>
+      <artifactId>pitest-junit5-plugin</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+  </dependencies>
+</plugin>
         </plugins>
 
         <!-- make version available at runtime via version file -->
