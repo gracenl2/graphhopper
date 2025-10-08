@@ -149,4 +149,28 @@ public class AngleCalcTest {
             this.y = y;
         }
     }
+    @Test
+    public void testFrontiereCompass(){
+        double slice = 360.0 / 16.0;
+        assertEquals("N", AC.azimuth2compassPoint(0));
+        assertEquals("N", AC.azimuth2compassPoint(slice - 0.1));
+        assertEquals("NE", AC.azimuth2compassPoint(slice *1.1));
+        assertEquals("E", AC.azimuth2compassPoint(slice *3.0));
+        assertEquals("SE", AC.azimuth2compassPoint(slice *5.0));
+        assertEquals("S", AC.azimuth2compassPoint(slice *9.0));
+        assertEquals("SW", AC.azimuth2compassPoint(slice *11.0));
+        assertEquals("W", AC.azimuth2compassPoint(slice *13.0));
+        assertEquals("NW", AC.azimuth2compassPoint(slice *15.0));
+        assertEquals("N", AC.azimuth2compassPoint(slice *16.0 - 0.1));
+    }
+
+    @Test
+    public void testAngleXY(){
+        double result = AC.convertAzimuth2xaxisAngle(270);
+        assertEquals(-Math.PI, result, 1E-6); 
+    }
+    @Test
+    public void testAlignOrientationFrontiere(){
+
+    }
 }
