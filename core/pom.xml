@@ -164,17 +164,35 @@
                     <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
                 </configuration>
             </plugin>
-                        <plugin>
+            <plugin> <!-- pitest -->
   <groupId>org.pitest</groupId>
   <artifactId>pitest-maven</artifactId>
   <version>1.9.11</version>
   <configuration>
+  <jvmPath>/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java</jvmPath>
+
     <targetClasses>
       <param>com.graphhopper.util.AngleCalc*</param>
     </targetClasses>
     <targetTests>
-      <param>com.graphhopper.util.*AngleCalc*</param>
+      <param>com.graphhopper.util.*AngleCalcTest*</param>
     </targetTests>
+    <testPlugin>junit5</testPlugin>
+    <threads>1</threads>                       
+    <useClasspathJar>false</useClasspathJar>   <!-- macOS -->
+    <jvmArgs>
+      <jvmArg>-Xmx1024m</jvmArg>               <!-- plus de memoire-->
+    </jvmArgs>
+
+    <!-- junit specification  -->
+    <withHistory>true</withHistory>
+    <timeoutConst>4000</timeoutConst>
+    <sourceDirectories>
+      <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+    </sourceDirectories>
+    <testSourceDirectories>
+      <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+    </testSourceDirectories>
   </configuration>
   <dependencies>
     <dependency>
@@ -184,7 +202,7 @@
     </dependency>
   </dependencies>
 </plugin>
-        </plugins>
+        </plugins> <!-- end pitest section-->
 
 
         <!-- make version available at runtime via version file -->

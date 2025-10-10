@@ -149,4 +149,67 @@ public class AngleCalcTest {
             this.y = y;
         }
     }
+
+     //Tester les transitions exactement entre 2 points cardineaux
+    @Test
+    public void testEntre2Compass(){
+        double slice = 360.0 / 16.0;
+        
+        assertEquals("N", AC.azimuth2compassPoint(0));
+        assertEquals("N", AC.azimuth2compassPoint(0.5*slice));
+        assertEquals("NE", AC.azimuth2compassPoint(slice +0.01));
+        assertEquals("NE", AC.azimuth2compassPoint(slice *2.0));
+        assertEquals("E", AC.azimuth2compassPoint(slice *4.0));
+        assertEquals("SE", AC.azimuth2compassPoint(slice *6.0));
+        assertEquals("S", AC.azimuth2compassPoint(slice *8.0));
+        assertEquals("SW", AC.azimuth2compassPoint(slice *10.0));
+        assertEquals("W", AC.azimuth2compassPoint(slice *12.0));
+        assertEquals("NW", AC.azimuth2compassPoint(slice *14.0));
+        assertEquals("N", AC.azimuth2compassPoint(slice *15.5));
+        assertEquals("N", AC.azimuth2compassPoint(slice - 0.01));
+        assertEquals("N", AC.azimuth2compassPoint(360.0 - 0.01));
+    }
+
+    //Différencier la conversion de 270 degres en -/+ PI
+    @Test
+    public void testAngle270(){
+        double result = AC.convertAzimuth2xaxisAngle(270);
+        assertEquals(-Math.PI, result, 1E-6); 
+    } 
+
+     //Tester les comparaisons entre frontières exactes
+    @Test
+    public void testAlignOrientationFrontiere(){
+        //base = 0 et orientation = -180
+        double result1 = AC.alignOrientation(0, -Math.PI);
+        assertEquals(-Math.PI, result1, 1E-6);
+
+        //base positive = 90, orientation = -180 +base
+        double base = Math.toRadians(90);
+        double result2 = AC.alignOrientation(base, -Math.PI+base);
+        assertEquals(-Math.PI + base, result2, 1E-6);
+
+        //base negative = -90, orientation = +180 +base
+        double baseNegative = Math.toRadians(-90);
+        double result3 = AC.alignOrientation(baseNegative, Math.PI+baseNegative);
+        assertEquals(Math.PI + baseNegative, result3, 1E-6);
+
+        //base positive = 90, orientation = +180 +base
+        double result4 = AC.alignOrientation(base, Math.PI+base);
+        assertEquals(Math.PI + base, result4, 1E-6);
+    } 
+
+   //Tester Clockwise avec des coordonnées sur une même ligne horizontale
+    @Test
+    public void testClockwiseHorizontal(){
+        Coordinate a = new Coordinate(0.1, 1);
+        Coordinate b = new Coordinate(0.2, 1);
+        Coordinate c = new Coordinate(0.3, 1);
+        assertFalse(isClockwise(a, b, c));
+        assertFalse(isClockwise(b, c, a));
+        assertFalse(isClockwise(c, a, b));
+        assertFalse(isClockwise(c, b, a));
+        assertFalse(isClockwise(a, c, b));
+        assertFalse(isClockwise(b, a, c));
+    } 
 }
