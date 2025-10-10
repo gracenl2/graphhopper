@@ -169,10 +169,10 @@ public class AngleCalcTest {
         assertEquals("N", AC.azimuth2compassPoint(slice - 0.01));
         assertEquals("N", AC.azimuth2compassPoint(360.0 - 0.01));
     }
-    
+
     //Différencier la conversion de 270 degres en -/+ PI
     @Test
-    public void testAngleXY(){
+    public void testAngle270(){
         double result = AC.convertAzimuth2xaxisAngle(270);
         assertEquals(-Math.PI, result, 1E-6); 
     } 
@@ -184,15 +184,19 @@ public class AngleCalcTest {
         double result1 = AC.alignOrientation(0, -Math.PI);
         assertEquals(-Math.PI, result1, 1E-6);
 
-        //base positive, orientation = -180 +base
+        //base positive = 90, orientation = -180 +base
         double base = Math.toRadians(90);
         double result2 = AC.alignOrientation(base, -Math.PI+base);
         assertEquals(-Math.PI + base, result2, 1E-6);
 
-        //base negative, orientation = +180 +base
+        //base negative = -90, orientation = +180 +base
         double baseNegative = Math.toRadians(-90);
         double result3 = AC.alignOrientation(baseNegative, Math.PI+baseNegative);
         assertEquals(Math.PI + baseNegative, result3, 1E-6);
+
+        //base positive = 90, orientation = +180 +base
+        double result4 = AC.alignOrientation(base, Math.PI+base);
+        assertEquals(Math.PI + base, result4, 1E-6);
     } 
 
    //Tester Clockwise avec des coordonnées sur une même ligne horizontale
