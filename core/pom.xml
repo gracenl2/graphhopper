@@ -204,6 +204,7 @@
 </plugin>
         </plugins> <!-- end pitest section-->
 
+
         <!-- make version available at runtime via version file -->
         <resources>
             <resource>
