@@ -164,7 +164,7 @@
                     <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
                 </configuration>
             </plugin>
-            <plugin>
+            <plugin> <!-- pitest -->
   <groupId>org.pitest</groupId>
   <artifactId>pitest-maven</artifactId>
   <version>1.9.11</version>
@@ -175,18 +175,16 @@
       <param>com.graphhopper.util.AngleCalc*</param>
     </targetClasses>
     <targetTests>
-      <param>com.graphhopper.util.*AngleCalc*</param>
+      <param>com.graphhopper.util.*AngleCalcTest*</param>
     </targetTests>
     <testPlugin>junit5</testPlugin>
-
-    <!-- stability settings -->
-    <threads>1</threads>                       <!-- run mutants sequentially -->
-    <useClasspathJar>false</useClasspathJar>   <!-- avoid long classpath jar on macOS -->
+    <threads>1</threads>                       
+    <useClasspathJar>false</useClasspathJar>   <!-- macOS -->
     <jvmArgs>
-      <jvmArg>-Xmx1024m</jvmArg>               <!-- give the child JVM some headroom -->
+      <jvmArg>-Xmx1024m</jvmArg>               <!-- plus de memoire-->
     </jvmArgs>
 
-    <!-- optional but fine to keep -->
+    <!-- junit specification  -->
     <withHistory>true</withHistory>
     <timeoutConst>4000</timeoutConst>
     <sourceDirectories>
@@ -204,7 +202,7 @@
     </dependency>
   </dependencies>
 </plugin>
-        </plugins>
+        </plugins> <!-- end pitest section-->
 
         <!-- make version available at runtime via version file -->
         <resources>
