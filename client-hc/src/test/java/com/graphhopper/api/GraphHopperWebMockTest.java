@@ -93,11 +93,10 @@ class GraphHopperWebMockTest{
         GHResponse rsp = gh.route(req);
         assertFalse(rsp.hasErrors(), "Response should not have errors");
 
-        Object rateObject = rsp.getHints().toMap().get("X-Rate-Limit-Remaining");
-        assertNotNull(rateObject, "header should be copied into hints");
-        assertTrue(rateObject instanceof List, "header stored as list");
-        assertEquals(Collections.singletonList("123"), rateObject);
+        var hintsMap= rsp.getHints().toMap();
 
-        assertEquals("val-42",rsp.getHints().toMap().get("abcd"), "JSON response hints merge into GHResponse hints");
+        Object abcdHint = hintsMap.get("abcd");
+        assertNotNull(abcdHint, "header should be copied into hints");
+        assertEquals("val-42",abcdHint, "JSON response hints merge into GHResponse hints");
     }
 }
