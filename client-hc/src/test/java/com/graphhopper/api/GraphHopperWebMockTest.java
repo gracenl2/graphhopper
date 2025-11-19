@@ -1,53 +1,28 @@
 package com.graphhopper.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
-import com.graphhopper.jackson.Jackson;
-import com.graphhopper.json.Statement;
-import com.graphhopper.util.CustomModel;
-import com.graphhopper.util.JsonFeature;
-import com.graphhopper.util.JsonFeatureCollection;
 import com.graphhopper.util.shapes.GHPoint;
-
-import com.github.javafaker.Faker;
 import okhttp3.*;
-
-import org.hibernate.validator.constraints.ModCheck;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Random;
 import java.util.List;
-import java.util.Map;
-
-import static com.graphhopper.json.Statement.If;
 import static org.junit.jupiter.api.Assertions.*;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mock;
-import static org.mockito.junit.jupiter.MockitoExtension;
+import  org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(MockitoExtension.class)
 class GraphHopperWebMockTest{
     @Mock
-    OkHttpClientWrapper okHttpClient;
+    OkHttpClient okHttpClient; //cas d'utilisation de mockito pour simuler les requete HTTP
 
 
     @Mock
-    Call call;
+    Call call; //cas d'utilisation de mockito pour simuler objetde l'appel HTTP
 
     private GraphHopperWeb createClient(){
         GraphHopperWeb gh = new GraphHopperWeb("https://unused/route");
@@ -87,7 +62,42 @@ class GraphHopperWebMockTest{
 
         GHResponse rsp = gh.route(req);
 
-        assertTrue(rsp.hasErrors());
-        assertFalse(req.getHints().has("turn_description"));
+        assertTrue(rsp.hasErrors(), "Response should have errors");
+        assertFalse(req.getHints().has("turn_description"), "turn_description hint should be removed from request hints");
+    }
+
+    /*Cas le serveur retourne un JSON valide */
+
+    @Test
+    void route_success_no_errors_copies_headers_and_hints_with_empty_paths_hints() throws IOException{
+        GraphHopperWeb gh = createClient();
+
+        GHRequest req= new GHRequest()
+                .addPoint(new GHPoint(45.0, -73.0))
+                .addPoint(new GHPoint(45.1, -73.1))
+                .setProfile("car");
+
+        String json = "{\"paths\":[],\"hints\":{\"abcd\":\"val-42\"}}";
+        Response fakResponse = new Response.Builder()
+                .request(new Request.Builder().url("https://localhost:8080/route").build())
+                .protocol(Protocol.HTTP_1_1)
+                .code(200)
+                .message("OK")
+                .body(ResponseBody.create(json, MediaType.get("application/json")))
+                .addHeader("X-Rate-Limit-Remaining", "123")
+                .build();
+
+        when(okHttpClient.newCall(any())).thenReturn(call);
+        when(call.execute()).thenReturn(fakResponse);
+
+        GHResponse rsp = gh.route(req);
+        assertFalse(rsp.hasErrors(), "Response should not have errors");
+
+        Object rateObject = rsp.getHints().toMap().get("X-Rate-Limit-Remaining");
+        assertNotNull(rateObject, "header should be copied into hints");
+        assertTrue(rateObject instanceof List, "header stored as list");
+        assertEquals(Collections.singletonList("123"), rateObject);
+
+        assertEquals("val-42",rsp.getHints().toMap().get("abcd"), "JSON response hints merge into GHResponse hints");
     }
 }
