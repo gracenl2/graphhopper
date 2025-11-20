@@ -40,10 +40,6 @@ jobs:
             ${{ runner.os}}-node_modules-
       - name: Build ${{ matrix.java-version }}
         run: mvn -B clean test
-      - name: Verify client-hc module
-        if: matrix.java-version == '24'
-        working-directory: client-hc
-        run: mvn -B verify
       - name: Run PIT mutation tests (client-hc)
         if: matrix.java-version == '24'
         working-directory: client-hc
