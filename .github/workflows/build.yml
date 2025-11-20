@@ -1,5 +1,7 @@
 name: Build and Test
 on: push
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,4 +38,85 @@ jobs:
             ${{ runner.os}}-node_modules-
       - name: Build ${{ matrix.java-version }}
         run: mvn -B clean test
+      - name: Verify client-hc module
+        if: matrix.java-version == '24'
+        working-directory: client-hc
+        run: mvn -B verify
+      - name: Run PIT mutation tests (client-hc)
+        if: matrix.java-version == '24'
+        working-directory: client-hc
+        run: mvn -Dverbose test-compile org.pitest:pitest-maven:mutationCoverage
+      - name: Extract mutation score (client-hc)
+        if: matrix.java-version == '24'
+        id: pit-mutation
+        working-directory: client-hc
+        run: |
+          REPORT_FILE=$(find target/pit-reports -name "index.html" | head -n 1)
+          echo "Using report: $REPORT_FILE"
+          if [ -z "$REPORT_FILE" ]; then
+            echo "ERROR: No PIT index.html report found"
+            exit 1
+          fi
+
+          SCORE=$(python3 ../ci/extract_pit_score.py "$REPORT_FILE")
+          echo "Detected mutation score: $SCORE"
+          echo "score=$SCORE" >> "$GITHUB_OUTPUT"
+      - name: Load baseline mutation score (client-hc)
+        if: matrix.java-version == '24'
+        id: pit-baseline
+        working-directory: client-hc
+        run: |
+          if [ ! -f pit-baseline.txt ]; then
+            echo "pit-baseline.txt not found in client-hc/, initializing with 0"
+            echo "0" > pit-baseline.txt
+          fi
+          BASELINE=$(cat pit-baseline.txt)
+          echo "Baseline mutation score: $BASELINE"
+          echo "baseline=$BASELINE" >> "$GITHUB_OUTPUT"
+      - name: Fail build if mutation score decreased (client-hc)
+        if: matrix.java-version == '24'
+        run: |
+          echo "Current mutation score: ${{ steps.pit-mutation.outputs.score }}"
+          echo "Baseline mutation score: ${{ steps.pit-baseline.outputs.baseline }}"
+          python3 - << 'EOF'
+          import sys
+
+          current = float("${{ steps.pit-mutation.outputs.score }}")
+          baseline = float("${{ steps.pit-baseline.outputs.baseline }}")
+
+          print(f"Current mutation score: {current}")
+          print(f"Baseline mutation score: {baseline}")
+
+          if current + 1e-9 < baseline:
+              print(f"ERROR: mutation score decreased from {baseline} to {current}")
+              sys.exit(1)
+          else:
+              print("Mutation score OK (>= baseline)")
+          EOF
+      - name: Update baseline if mutation score improved (client-hc)
+        if: matrix.java-version == '24' && success() && github.event_name == 'push'
+        working-directory: client-hc
+        run: |
+          current="${{ steps.pit-mutation.outputs.score }}"
+          baseline="${{ steps.pit-baseline.outputs.baseline }}"
+
+          echo "Current mutation score: $current"
+          echo "Baseline mutation score: $baseline"
+
+          is_greater=$(python3 -c "import sys; c=float('$current'); b=float('$baseline'); print(1 if c > b else 0)")
+          echo "is_greater = $is_greater"
+
+          if [ "$is_greater" -eq 1 ]; then
+            echo "Mutation score improved, updating pit-baseline.txt"
+            echo "$current" > pit-baseline.txt
+
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            git add pit-baseline.txt
+            git commit -m "Update mutation baseline to $current [skip ci]" || echo "No changes to commit"
+            git push
+          else
+            echo "Mutation score did not improve; baseline unchanged."
+          fi
 
