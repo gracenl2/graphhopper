@@ -1,7 +1,7 @@
 name: Build and Test
 on:
   push:
-  worlkflow_dispatch:
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
