@@ -127,7 +127,7 @@ jobs:
           echo "Simulating failure just before Rickroll"
           exit 1
       - name: Rickroll if tests failed
-        if: always() && failure()
+        if: failure()
         uses: remrem08007/ci-rickroll@v1.0.1
         with:
           percentage: 100
