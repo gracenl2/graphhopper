@@ -121,3 +121,15 @@ jobs:
           else
             echo "Mutation score did not improve; baseline unchanged."
           fi
+      - name: Simulate failure (for Rickroll test)
+        if: matrix.java-version == '24'
+        run: |
+          echo "Simulating failure just before Rickroll"
+          exit 1
+      - name: Rickroll if tests failed
+        if: failure()
+        uses: remrem08007/ci-rickroll@v1.0.1
+        with:
+          percentage: 100
+          message: "Les tests GraphHopper ont échoué… 🎵 Never gonna give you up!"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
