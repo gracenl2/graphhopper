@@ -122,7 +122,7 @@ jobs:
             echo "Mutation score did not improve; baseline unchanged."
           fi
       - name: Rickroll if tests failed
-        if: failure() && github.event_name == 'pull_request'
+        if: always() && failure() && github.event_name == 'pull_request'
         uses: TejasvOnly/random-rickroll@v1.0
         with:
           percentage: 100
