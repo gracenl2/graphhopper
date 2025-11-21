@@ -122,7 +122,7 @@ jobs:
             echo "Mutation score did not improve; baseline unchanged."
           fi
       - name: Simulate failure (for Rickroll test)
-        if: matrix.java-version == '24' && github.event_name == 'pull_request'
+        if: matrix.java-version == '24'
         run: |
           echo "Simulating failure just before Rickroll"
           exit 1
