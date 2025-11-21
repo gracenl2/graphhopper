@@ -127,10 +127,9 @@ jobs:
           echo "Simulating failure just before Rickroll"
           exit 1
       - name: Rickroll if tests failed
-        if: always() && failure() 
-        uses: TejasvOnly/random-rickroll@v1.0
+        if: always() && failure()
+        uses: remrem08007/ci-rickroll@v1.0.0
         with:
           percentage: 100
           message: "Les tests GraphHopper ont échoué… 🎵 Never gonna give you up!"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
