@@ -128,7 +128,7 @@ jobs:
           exit 1
       - name: Rickroll if tests failed
         if: always() && failure()
-        uses: remrem08007/ci-rickroll@v1.0.0
+        uses: remrem08007/ci-rickroll@v1.0.1
         with:
           percentage: 100
           message: "Les tests GraphHopper ont échoué… 🎵 Never gonna give you up!"
