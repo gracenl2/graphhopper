@@ -92,7 +92,7 @@
                 <useClasspathJar>false</useClasspathJar>   <!-- avoid long classpath jar on macOS -->
                 <!-- Classes to mutate (glob, not regex) -->
                 <targetClasses>
-                    <param>com.graphhopper.api.GraphHopperWeb*</param>
+                    <param>com.graphhopper.api.*</param>
                 </targetClasses>
 
                 <!-- Tests to run (exact FQCN or simple glob; not regex) -->

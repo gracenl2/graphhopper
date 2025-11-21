@@ -121,3 +121,11 @@ jobs:
           else
             echo "Mutation score did not improve; baseline unchanged."
           fi
+      - name: Rickroll if tests failed
+        if: failure() && github.event_name == 'pull_request'
+        uses: TejasvOnly/random-rickroll@v1.0
+        with:
+          percentage: 100
+          message: "Les tests GraphHopper ont échoué… 🎵 Never gonna give you up!"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
