@@ -93,11 +93,13 @@
                 <!-- Classes to mutate (glob, not regex) -->
                 <targetClasses>
                     <param>com.graphhopper.api.GraphHopperWeb*</param>
+                    <param>com.graphhopper.api.GraphHopperMatrixWeb*</param>
                 </targetClasses>
 
                 <!-- Tests to run (exact FQCN or simple glob; not regex) -->
                 <targetTests>
                     <param>com.graphhopper.api.GraphHopperWeb*Test*</param>
+                    <param>com.graphhopper.api.GraphHopperMatrixWeb*Test*</param>                    
                 </targetTests>
 
                 <!-- Sensible defaults -->

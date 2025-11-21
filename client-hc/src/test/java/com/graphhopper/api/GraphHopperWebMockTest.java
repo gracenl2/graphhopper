@@ -6,8 +6,6 @@ import com.graphhopper.util.shapes.GHPoint;
 import okhttp3.*;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
