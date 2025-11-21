@@ -42,7 +42,7 @@ jobs:
           restore-keys: |
             ${{ runner.os}}-node_modules-
       - name: Build ${{ matrix.java-version }}
-        run: mvn -B clean install -DskipTests
+        run: mvn -B clean install
       - name: Verify client-hc module
         if: matrix.java-version == '24'
         working-directory: client-hc
@@ -124,11 +124,11 @@ jobs:
           else
             echo "Mutation score did not improve; baseline unchanged."
           fi
-      - name: Simulate failure (for Rickroll test)
-        if: matrix.java-version == '24'
-        run: |
-          echo "Simulating failure just before Rickroll"
-          exit 1
+      # - name: Simulate failure (for Rickroll test)
+      #   if: matrix.java-version == '24'
+      #   run: |
+      #     echo "Simulating failure just before Rickroll"
+      #     exit 1
       - name: Rickroll if tests failed
         if: failure() && matrix.java-version == '24'
         uses: remrem08007/ci-rickroll@v1.0.1
