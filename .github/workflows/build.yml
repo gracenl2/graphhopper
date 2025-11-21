@@ -2,8 +2,11 @@ name: Build and Test
 on:
   push:
   workflow_dispatch:
+  pull_request:
 permissions:
   contents: write
+  pull-requests: write
+  issues: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -127,7 +130,7 @@ jobs:
           echo "Simulating failure just before Rickroll"
           exit 1
       - name: Rickroll if tests failed
-        if: failure()
+        if: failure() && matrix.java-version == '24'
         uses: remrem08007/ci-rickroll@v1.0.1
         with:
           percentage: 100
